@@ -1,3 +1,12 @@
+# Changes made to scraper
+
+I modified the scraper to extrat all article titles from the front page of The Daily Pennsylvanian. The original version of the scraper only extracted a single headline by searching for an ```<a>``` tag with the class ```frontpage-link```. After inspecting the HTML structure of the site, I saw that there are multiple articles that exist under the same tag with the class ```frontpage-link large-link```.
+
+To adapt the scraper, I used ```soup.find_all()``` (previously ```soup.find())```). This was so the scraper returns all matches, not just one Then, I updated the data storage to handle lists instead of a single string, in order for it to store all the different titles.
+
+I decided on this change to allow better analysis of top new trends, instead of just tracking one story of the day. Now, we can identify trending topics and compare headlines to see how focuses shift over time or what words/themes appear most frequently. 
+
+
 # Basic Git Scraper Template
 
 This template provides a starting point for **git scraping**—the technique of scraping data from websites and automatically committing it to a Git repository using workflows, [coined by Simon Willison](https://simonwillison.net/2020/Oct/9/git-scraping/).
