@@ -20,16 +20,25 @@ def scrape_data_point():
     Returns:
         str: The headline text if found, otherwise an empty string.
     """
-    req = requests.get("https://www.thedp.com")
+    headers = {
+        "User-Agent": "cis3500-scraper"
+    }
+    req = requests.get("https://www.thedp.com", headers=headers)
     loguru.logger.info(f"Request URL: {req.url}")
     loguru.logger.info(f"Request status code: {req.status_code}")
 
+    all_titles = list()
     if req.ok:
         soup = bs4.BeautifulSoup(req.text, "html.parser")
-        target_element = soup.find("a", class_="frontpage-link")
-        data_point = "" if target_element is None else target_element.text
-        loguru.logger.info(f"Data point: {data_point}")
-        return data_point
+        target_element = soup.find_all("a", class_="frontpage-link")
+
+        for article in target_element:
+            title = article.text.strip()
+            if title:
+                all_titles.append(title)
+        # data_point = "" if target_element is None else target_element.text
+        loguru.logger.info(f"Scraped {len(all_titles)} headlines")
+        return all_titles
 
 
 if __name__ == "__main__":
@@ -54,14 +63,14 @@ if __name__ == "__main__":
     # Run scrape
     loguru.logger.info("Starting scrape")
     try:
-        data_point = scrape_data_point()
+        all_titles = scrape_data_point()
     except Exception as e:
         loguru.logger.error(f"Failed to scrape data point: {e}")
-        data_point = None
+        all_titles = None
 
     # Save data
-    if data_point is not None:
-        dem.add_today(data_point)
+    if all_titles is not None:
+        dem.add_today(all_titles)
         dem.save()
         loguru.logger.info("Saved daily event monitor")
 
